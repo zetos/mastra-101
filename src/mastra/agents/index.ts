@@ -6,4 +6,7 @@ const mcp = new MCPClient({
   },
 });
 
-export { mcp };
+// Initialize MCP tools
+const mcpTools = await mcp.getTools();
+
+export { mcp, mcpTools };
