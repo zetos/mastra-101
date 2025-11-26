@@ -22,6 +22,10 @@ const mcp = new MCPClient({
     // github: {
     //   url: smitheryGithubMCPServerUrl,
     // },
+    hackernews: {
+      command: "npx",
+      args: ["-y", "@devabdultech/hn-mcp-server"],
+    },
   },
 });
 
@@ -32,7 +36,7 @@ export const personalAssistantAgent = new Agent({
   name: 'Personal Assistant',
   instructions: `
     You are a helpful personal assistant that can help with various tasks such as email, 
-    monitoring github activity, and scheduling social media posts.
+    monitoring github activity, scheduling social media posts, and providing tech news.
     
     You have access to the following tools:
     
@@ -44,6 +48,11 @@ export const personalAssistantAgent = new Agent({
     2. GitHub:
        - Use these tools for monitoring and summarizing GitHub activity
        - You can summarize recent commits, pull requests, issues, and development patterns
+    
+    3. Hackernews:
+       - Use this tool to search for stories on Hackernews
+       - You can use it to get the top stories or specific stories
+       - You can use it to retrieve comments for stories
     
     Keep your responses concise and friendly.
   `,
