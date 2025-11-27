@@ -44,10 +44,10 @@ const mcpTools = await mcp.getTools();
 
 const memory = new Memory({
   storage: new LibSQLStore({
-    url: 'file:../../personal-assistant-memory.db',
+    url: 'file:../personal-assistant-memory.db',
   }),
   vector: new LibSQLVector({
-    connectionUrl: 'file:../../personal-assistant-memory.db',
+    connectionUrl: 'file:../personal-assistant-memory.db',
   }),
   embedder: 'openai/text-embedding-3-small',
   options: {
