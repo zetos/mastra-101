@@ -3,6 +3,7 @@ import { Agent } from '@mastra/core/agent';
 import { createSmitheryUrl } from '@smithery/sdk';
 import { Memory } from '@mastra/memory';
 import { LibSQLStore } from '@mastra/libsql';
+import path from 'path';
 
 // Create Smithery GitHub MCP URL
 const smitheryGithubMCPServerUrl = createSmitheryUrl(
@@ -12,6 +13,8 @@ const smitheryGithubMCPServerUrl = createSmitheryUrl(
     profile: process.env.SMITHERY_PROFILE,
   }
 );
+
+const notesPatch = path.join(process.cwd(), '..', '..', 'notes');
 
 const mcp = new MCPClient({
   servers: {
@@ -23,8 +26,15 @@ const mcp = new MCPClient({
     //   url: smitheryGithubMCPServerUrl,
     // },
     hackernews: {
-      command: "npx",
-      args: ["-y", "@devabdultech/hn-mcp-server"],
+      command: 'npx',
+      args: ['-y', '@devabdultech/hn-mcp-server'],
+    },
+    textEditor: {
+      command: 'npx',
+      args: [
+        `@modelcontextprotocol/server-filesystem`,
+        notesPatch, // relative to output directory
+      ],
     },
   },
 });
@@ -36,7 +46,8 @@ export const personalAssistantAgent = new Agent({
   name: 'Personal Assistant',
   instructions: `
     You are a helpful personal assistant that can help with various tasks such as email, 
-    monitoring github activity, scheduling social media posts, and providing tech news.
+    monitoring github activity, scheduling social media posts, providing tech news,
+    and managing notes and to-do lists.
     
     You have access to the following tools:
     
@@ -53,6 +64,12 @@ export const personalAssistantAgent = new Agent({
        - Use this tool to search for stories on Hackernews
        - You can use it to get the top stories or specific stories
        - You can use it to retrieve comments for stories
+    
+    4. Filesystem:
+       - You also have filesystem read/write access to a notes directory. 
+       - You can use that to store info for later use or organize info for the user.
+       - You can use this notes directory to keep track of to-do list items for the user.
+       - Notes dir: ${notesPatch}
     
     Keep your responses concise and friendly.
   `,
