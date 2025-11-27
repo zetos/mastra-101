@@ -2,7 +2,7 @@ import { MCPClient } from '@mastra/mcp';
 import { Agent } from '@mastra/core/agent';
 import { createSmitheryUrl } from '@smithery/sdk';
 import { Memory } from '@mastra/memory';
-import { LibSQLStore } from '@mastra/libsql';
+import { LibSQLStore, LibSQLVector } from '@mastra/libsql';
 import path from 'path';
 
 // Create Smithery GitHub MCP URL
@@ -42,6 +42,40 @@ const mcp = new MCPClient({
 // Initialize MCP tools
 const mcpTools = await mcp.getTools();
 
+const memory = new Memory({
+  storage: new LibSQLStore({
+    url: 'file:../../personal-assistant-memory.db',
+  }),
+  vector: new LibSQLVector({
+    connectionUrl: 'file:../../personal-assistant-memory.db',
+  }),
+  embedder: 'openai/text-embedding-3-small',
+  options: {
+    // Keep last 20 messages in context
+    lastMessages: 20,
+    // Enable semantic search to find relevant past conversations
+    semanticRecall: {
+      topK: 3,
+      messageRange: {
+        before: 2,
+        after: 1,
+      },
+    },
+    // Enable working memory to remember user information
+    workingMemory: {
+      enabled: true,
+      template: `
+      <user>
+         <first_name></first_name>
+         <username></username>
+         <preferences></preferences>
+         <interests></interests>
+         <conversation_style></conversation_style>
+       </user>`,
+    },
+  },
+});
+
 export const personalAssistantAgent = new Agent({
   name: 'Personal Assistant',
   instructions: `
@@ -71,15 +105,20 @@ export const personalAssistantAgent = new Agent({
        - You can use this notes directory to keep track of to-do list items for the user.
        - Notes dir: ${notesPatch}
     
-    Keep your responses concise and friendly.
+    You have access to conversation memory and can remember details about users.
+    When you learn something about a user, update their working memory using the appropriate tool.
+    This includes:
+    - Their interests
+    - Their preferences
+    - Their conversation style (formal, casual, etc.)
+    - Any other relevant information that would help personalize the conversation
+
+    Always maintain a helpful and professional tone.
+    Use the stored information to provide more personalized responses.
   `,
   model: 'openai/gpt-5.1',
   tools: { ...mcpTools }, // Add MCP tools to your agent
-  memory: new Memory({
-    storage: new LibSQLStore({
-      url: 'file:../personal-assistant-mastra.db',
-    }),
-  }),
+  memory,
 });
 
 export { mcp, mcpTools };
