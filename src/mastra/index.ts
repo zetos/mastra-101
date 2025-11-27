@@ -2,9 +2,7 @@ import { Mastra } from '@mastra/core/mastra';
 import { PinoLogger } from '@mastra/loggers';
 import { LibSQLStore } from '@mastra/libsql';
 import { weatherWorkflow } from './workflows/weather-workflow';
-import { weatherAgent } from './agents/weather-agent';
-import { financialAgent } from './agents/financial-agent';
-import { personalAssistantAgent } from './agents/personal-assistant-agent';
+import { weatherAgent, financialAgent, personalAssistantAgent } from './agents';
 import {
   toolCallAppropriatenessScorer,
   completenessScorer,
