@@ -8,7 +8,7 @@
     "dev": "mastra dev",
     "build": "mastra build",
     "start": "mastra start",
-    "examples": "npx tsx src/agent-examples.ts"
+    "example:agent": "npx tsx src/agent-examples.ts"
   },
   "keywords": [],
   "author": "",
