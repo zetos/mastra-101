@@ -2,6 +2,7 @@ import { Mastra } from '@mastra/core/mastra';
 import { PinoLogger } from '@mastra/loggers';
 import { LibSQLStore } from '@mastra/libsql';
 import { weatherWorkflow } from './workflows/weather-workflow';
+import { contentWorkflow } from './workflows/content-workflow';
 import {
   weatherAgent,
   financialAgent,
@@ -16,7 +17,7 @@ import {
 } from './scorers/weather-scorer';
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow },
+  workflows: { weatherWorkflow, contentWorkflow },
   agents: {
     weatherAgent,
     financialAgent,
