@@ -14,8 +14,9 @@ const memory = new Memory({
   options: {
     lastMessages: 20, // Include the last 20 messages in the context instead of default 10
     semanticRecall: {
-      topK: 3,
+      topK: 3, // how many semantically similar messages are retrieved; default 4
       messageRange: {
+        // parameter controls how much context is included with each match.
         before: 2,
         after: 1,
       },
