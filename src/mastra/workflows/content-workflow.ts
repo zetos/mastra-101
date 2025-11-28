@@ -77,9 +77,55 @@ export const enhanceContentStep = createStep({
   },
 });
 
+export const generateSummaryStep = createStep({
+  id: 'generate-summary',
+  description: 'Generates a concise summary of the content',
+  inputSchema: z.object({
+    content: z.string(),
+    type: z.string(),
+    wordCount: z.number(),
+    metadata: z.object({
+      readingTime: z.number(),
+      difficulty: z.enum(['easy', 'medium', 'hard']),
+      processedAt: z.string(),
+    }),
+  }),
+  outputSchema: z.object({
+    content: z.string(),
+    type: z.string(),
+    wordCount: z.number(),
+    metadata: z.object({
+      readingTime: z.number(),
+      difficulty: z.enum(['easy', 'medium', 'hard']),
+      processedAt: z.string(),
+    }),
+    summary: z.string(),
+  }),
+  execute: async ({ inputData }) => {
+    const { content, wordCount } = inputData;
+    
+    // Simple summary logic - take first sentence and last sentence
+    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    let summary: string;
+    
+    if (sentences.length <= 2) {
+      summary = content.trim();
+    } else {
+      const firstSentence = sentences[0]?.trim() || '';
+      const lastSentence = sentences[sentences.length - 1]?.trim() || '';
+      summary = `${firstSentence}. ... ${lastSentence}.`;
+    }
+    
+    return {
+      ...inputData,
+      summary,
+    };
+  },
+});
+
 export const contentWorkflow = createWorkflow({
   id: 'content-processing-workflow',
-  description: 'Validates and enhances content',
+  description: 'Validates, enhances, and summarizes content',
   inputSchema: z.object({
     content: z.string(),
     type: z.enum(['article', 'blog', 'social']).default('article'),
@@ -93,8 +139,10 @@ export const contentWorkflow = createWorkflow({
       difficulty: z.enum(['easy', 'medium', 'hard']),
       processedAt: z.string(),
     }),
+    summary: z.string(),
   }),
 })
   .then(validateContentStep)
   .then(enhanceContentStep)
+  .then(generateSummaryStep)
   .commit();
