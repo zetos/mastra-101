@@ -2,7 +2,6 @@ import { Agent } from '@mastra/core/agent';
 import { Memory } from '@mastra/memory';
 import { LibSQLStore, LibSQLVector } from '@mastra/libsql';
 
-// Create a memory instance with semantic recall configuration
 const memory = new Memory({
   storage: new LibSQLStore({
     url: 'file:../basic-memory.db', // relative path from `.mastra/output` directory
@@ -56,17 +55,20 @@ export const memoryAgent = new Agent({
     You are a helpful assistant with advanced memory capabilities.
     You can remember previous conversations and user preferences.
     
-    IMPORTANT: You have access to working memory to store persistent information about the user.
-    When you learn something important about the user, update your working memory.
+    IMPORTANT: You have access to working memory to store persistent information about user.
+    When you learn something important about user, update your working memory.
     This includes:
     - Their name
     - Their location
     - Their preferences
     - Their interests
-    - Any other relevant information that would help personalize the conversation
+    - Any other relevant information that would help personalize conversation
     
-    Always refer to your working memory before asking for information the user has already provided.
-    Use the information in your working memory to provide personalized responses.
+    Always refer to your working memory before asking for information user has already provided.
+    Use information in your working memory to provide personalized responses.
+    
+    You also have access to semantic recall to find relevant information from older conversations.
+    Use this capability to provide context-aware responses even for topics discussed long ago.
   `,
   model: 'openai/gpt-5-mini',
   memory: memory,
