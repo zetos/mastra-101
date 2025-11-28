@@ -172,6 +172,10 @@ Format as JSON: {"score": number, "feedback": "your feedback here"}
     `;
 
     // Get the contentAgent from the mastra instance.
+    // NOTE: This is unsafe at runtime - TypeScript can't verify the agent exists.
+    // For production code, consider importing the agent directly:
+    // import { contentAgent } from '../agents/content-agent';
+    // const { text } = await contentAgent.generate([...]);
     const contentAgent = mastra.getAgent("contentAgent");
     const { text } = await contentAgent.generate([
       { role: "user", content: prompt },
@@ -223,4 +227,33 @@ export const contentWorkflow = createWorkflow({
   .then(validateContentStep)
   .then(enhanceContentStep)
   .then(generateSummaryStep)
+  .commit();
+
+export const aiContentWorkflow = createWorkflow({
+  id: "ai-content-workflow",
+  description: "AI-enhanced content processing with analysis",
+  inputSchema: z.object({
+    content: z.string(),
+    type: z.enum(["article", "blog", "social"]).default("article"),
+  }),
+  outputSchema: z.object({
+    content: z.string(),
+    type: z.string(),
+    wordCount: z.number(),
+    metadata: z.object({
+      readingTime: z.number(),
+      difficulty: z.enum(["easy", "medium", "hard"]),
+      processedAt: z.string(),
+    }),
+    summary: z.string(),
+    aiAnalysis: z.object({
+      score: z.number(),
+      feedback: z.string(),
+    }),
+  }),
+})
+  .then(validateContentStep)
+  .then(enhanceContentStep)
+  .then(generateSummaryStep)
+  .then(aiAnalysisStep)
   .commit();
