@@ -23,6 +23,28 @@ const memory = new Memory({
     },
     workingMemory: {
       enabled: true,
+      template: `
+# User Profile
+
+## Personal Info
+
+- Name:
+- Location:
+- Timezone:
+
+## Preferences
+
+- Communication Style: [e.g., Formal, Casual]
+- Interests:
+- Favorite Topics:
+
+## Session State
+
+- Current Topic:
+- Open Questions:
+  - [Question 1]
+  - [Question 2]
+`,
     },
   },
 });
