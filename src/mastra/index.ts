@@ -9,6 +9,7 @@ import {
   personalAssistantAgent,
   memoryAgent,
   learningAssistantAgent,
+  contentAgent,
 } from './agents';
 import {
   toolCallAppropriatenessScorer,
@@ -24,6 +25,7 @@ export const mastra = new Mastra({
     personalAssistantAgent,
     memoryAgent,
     learningAssistantAgent,
+    contentAgent,
   },
   scorers: {
     toolCallAppropriatenessScorer,
