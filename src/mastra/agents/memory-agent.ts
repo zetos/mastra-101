@@ -1,14 +1,19 @@
 import { Agent } from '@mastra/core/agent';
 import { Memory } from '@mastra/memory';
-import { LibSQLStore } from '@mastra/libsql';
+import { LibSQLStore, LibSQLVector } from '@mastra/libsql';
 
-// Create a memory instance with custom conversation history settings
+// Create a memory instance with semantic recall configuration
 const memory = new Memory({
   storage: new LibSQLStore({
     url: 'file:../basic-memory.db', // relative path from `.mastra/output` directory
-  }),
+  }), // Storage for message history
+  vector: new LibSQLVector({
+    connectionUrl: 'file:../basic-vector.db', // relative path from `.mastra/output` directory
+  }), // Vector database for semantic search
+  embedder: 'openai/text-embedding-3-small', // Embedder for message embeddings
   options: {
-    lastMessages: 20, // Include the last 20 messages in the context instead of the default 10
+    lastMessages: 20, // Include the last 20 messages in the context instead of default 10
+    semanticRecall: true, // Enable semantic recall with default settings
   },
 });
 
