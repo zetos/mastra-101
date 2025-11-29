@@ -103,11 +103,13 @@ export const generateSummaryStep = createStep({
   }),
   execute: async ({ inputData }) => {
     const { content, wordCount } = inputData;
-    
+
     // Simple summary logic - take first sentence and last sentence
-    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    const sentences = content
+      .split(/[.!?]+/)
+      .filter((s) => s.trim().length > 0);
     let summary: string;
-    
+
     if (sentences.length <= 2) {
       summary = content.trim();
     } else {
@@ -115,7 +117,7 @@ export const generateSummaryStep = createStep({
       const lastSentence = sentences[sentences.length - 1]?.trim() || '';
       summary = `${firstSentence}. ... ${lastSentence}.`;
     }
-    
+
     return {
       ...inputData,
       summary,
@@ -124,15 +126,15 @@ export const generateSummaryStep = createStep({
 });
 
 const aiAnalysisStep = createStep({
-  id: "ai-analysis",
-  description: "AI-powered content analysis",
+  id: 'ai-analysis',
+  description: 'AI-powered content analysis',
   inputSchema: z.object({
     content: z.string(),
     type: z.string(),
     wordCount: z.number(),
     metadata: z.object({
       readingTime: z.number(),
-      difficulty: z.enum(["easy", "medium", "hard"]),
+      difficulty: z.enum(['easy', 'medium', 'hard']),
       processedAt: z.string(),
     }),
     summary: z.string(),
@@ -143,7 +145,7 @@ const aiAnalysisStep = createStep({
     wordCount: z.number(),
     metadata: z.object({
       readingTime: z.number(),
-      difficulty: z.enum(["easy", "medium", "hard"]),
+      difficulty: z.enum(['easy', 'medium', 'hard']),
       processedAt: z.string(),
     }),
     summary: z.string(),
@@ -176,9 +178,9 @@ Format as JSON: {"score": number, "feedback": "your feedback here"}
     // For production code, consider importing the agent directly:
     // import { contentAgent } from '../agents/content-agent';
     // const { text } = await contentAgent.generate([...]);
-    const contentAgent = mastra.getAgent("contentAgent");
+    const contentAgent = mastra.getAgent('contentAgent');
     const { text } = await contentAgent.generate([
-      { role: "user", content: prompt },
+      { role: 'user', content: prompt },
     ]);
 
     // Parse AI response (with fallback)
@@ -188,7 +190,7 @@ Format as JSON: {"score": number, "feedback": "your feedback here"}
     } catch {
       aiAnalysis = {
         score: 7,
-        feedback: "AI analysis completed. " + text,
+        feedback: 'AI analysis completed. ' + text,
       };
     }
 
@@ -207,18 +209,18 @@ Format as JSON: {"score": number, "feedback": "your feedback here"}
 
 // SEO Analysis
 const seoAnalysisStep = createStep({
-  id: "seo-analysis",
-  description: "SEO optimization analysis",
+  id: 'seo-analysis',
+  description: 'SEO optimization analysis',
   inputSchema: z.object({
     content: z.string(),
-    type: z.enum(["article", "blog", "social"]).default("article"),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
   }),
   outputSchema: z.object({
     seoScore: z.number(),
     keywords: z.array(z.string()),
   }),
   execute: async ({ inputData }) => {
-    console.log("🔍 Running SEO analysis...");
+    console.log('🔍 Running SEO analysis...');
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     const words = inputData.content.toLowerCase().split(/\s+/);
@@ -233,18 +235,18 @@ const seoAnalysisStep = createStep({
 
 // Readability Analysis
 const readabilityStep = createStep({
-  id: "readability-analysis",
-  description: "Content readability analysis",
+  id: 'readability-analysis',
+  description: 'Content readability analysis',
   inputSchema: z.object({
     content: z.string(),
-    type: z.enum(["article", "blog", "social"]).default("article"),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
   }),
   outputSchema: z.object({
     readabilityScore: z.number(),
     gradeLevel: z.string(),
   }),
   execute: async ({ inputData }) => {
-    console.log("📖 Running readability analysis...");
+    console.log('📖 Running readability analysis...');
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     const sentences = inputData.content.split(/[.!?]+/).length;
@@ -252,7 +254,7 @@ const readabilityStep = createStep({
     const avgWordsPerSentence = words / sentences;
 
     const score = Math.max(0, 100 - avgWordsPerSentence * 3);
-    const gradeLevel = score > 80 ? "Easy" : score > 60 ? "Medium" : "Hard";
+    const gradeLevel = score > 80 ? 'Easy' : score > 60 ? 'Medium' : 'Hard';
 
     return {
       readabilityScore: Math.floor(score),
@@ -263,38 +265,143 @@ const readabilityStep = createStep({
 
 // Sentiment Analysis
 const sentimentStep = createStep({
-  id: "sentiment-analysis",
-  description: "Content sentiment analysis",
+  id: 'sentiment-analysis',
+  description: 'Content sentiment analysis',
   inputSchema: z.object({
     content: z.string(),
-    type: z.enum(["article", "blog", "social"]).default("article"),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
   }),
   outputSchema: z.object({
-    sentiment: z.enum(["positive", "neutral", "negative"]),
+    sentiment: z.enum(['positive', 'neutral', 'negative']),
     confidence: z.number(),
   }),
   execute: async ({ inputData }) => {
-    console.log("😊 Running sentiment analysis...");
+    console.log('😊 Running sentiment analysis...');
     await new Promise((resolve) => setTimeout(resolve, 700));
 
     const content = inputData.content.toLowerCase();
-    const positiveWords = ["good", "great", "excellent", "amazing"];
-    const negativeWords = ["bad", "terrible", "awful", "horrible"];
+    const positiveWords = ['good', 'great', 'excellent', 'amazing'];
+    const negativeWords = ['bad', 'terrible', 'awful', 'horrible'];
 
     const positive = positiveWords.filter((word) =>
-      content.includes(word),
+      content.includes(word)
     ).length;
     const negative = negativeWords.filter((word) =>
-      content.includes(word),
+      content.includes(word)
     ).length;
 
-    let sentiment: "positive" | "neutral" | "negative" = "neutral";
-    if (positive > negative) sentiment = "positive";
-    if (negative > positive) sentiment = "negative";
+    let sentiment: 'positive' | 'neutral' | 'negative' = 'neutral';
+    if (positive > negative) sentiment = 'positive';
+    if (negative > positive) sentiment = 'negative';
 
     return {
       sentiment,
       confidence: Math.random() * 0.3 + 0.7, // 0.7-1.0
+    };
+  },
+});
+
+const assessContentStep = createStep({
+  id: 'assess-content',
+  description: 'Assesses content to determine processing path',
+  inputSchema: z.object({
+    content: z.string(),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
+  }),
+  outputSchema: z.object({
+    content: z.string(),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
+    wordCount: z.number(),
+    complexity: z.enum(['simple', 'moderate', 'complex']),
+    category: z.enum(['short', 'medium', 'long']),
+  }),
+  execute: async ({ inputData }) => {
+    const { content, type } = inputData;
+    const words = content.trim().split(/\s+/);
+    const wordCount = words.length;
+
+    // Determine category by length
+    let category: 'short' | 'medium' | 'long' = 'short';
+    if (wordCount >= 50) category = 'medium';
+    if (wordCount >= 200) category = 'long';
+
+    // Determine complexity by average word length
+    const avgWordLength =
+      words.reduce((sum, word) => sum + word.length, 0) / wordCount;
+    let complexity: 'simple' | 'moderate' | 'complex' = 'simple';
+    if (avgWordLength > 5) complexity = 'moderate';
+    if (avgWordLength > 7) complexity = 'complex';
+
+    console.log(`📋 Assessment: ${category} content, ${complexity} complexity`);
+
+    return {
+      content,
+      type,
+      wordCount,
+      complexity,
+      category,
+    };
+  },
+});
+
+const quickProcessingStep = createStep({
+  id: 'quick-processing',
+  description: 'Quick processing for short and simple content',
+  inputSchema: z.object({
+    content: z.string(),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
+    wordCount: z.number(),
+    complexity: z.enum(['simple', 'moderate', 'complex']),
+    category: z.enum(['short', 'medium', 'long']),
+  }),
+  outputSchema: z.object({
+    processedContent: z.string(),
+    processingType: z.string(),
+    recommendations: z.array(z.string()),
+  }),
+  execute: async ({ inputData }) => {
+    console.log('⚡ Quick processing for short and simple content...');
+
+    return {
+      processedContent: inputData.content,
+      processingType: 'quick',
+      recommendations: [
+        'Content is concise',
+        'Consider expanding for more detail',
+      ],
+    };
+  },
+});
+
+const generalProcessingStep = createStep({
+  id: 'general-processing',
+  description: 'General processing for all other content',
+  inputSchema: z.object({
+    content: z.string(),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
+    wordCount: z.number(),
+    complexity: z.enum(['simple', 'moderate', 'complex']),
+    category: z.enum(['short', 'medium', 'long']),
+  }),
+  outputSchema: z.object({
+    processedContent: z.string(),
+    processingType: z.string(),
+    recommendations: z.array(z.string()),
+  }),
+  execute: async ({ inputData }) => {
+    console.log('📝 General processing for non-short/simple content...');
+
+    // Simulate more involved processing
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return {
+      processedContent: inputData.content,
+      processingType: 'general',
+      recommendations: [
+        'Consider simplifying content',
+        'Break up long paragraphs',
+        'Add examples or explanations if needed',
+      ],
     };
   },
 });
@@ -324,11 +431,11 @@ export const contentWorkflow = createWorkflow({
   .commit();
 
 export const aiContentWorkflow = createWorkflow({
-  id: "ai-content-workflow",
-  description: "AI-enhanced content processing with analysis",
+  id: 'ai-content-workflow',
+  description: 'AI-enhanced content processing with analysis',
   inputSchema: z.object({
     content: z.string(),
-    type: z.enum(["article", "blog", "social"]).default("article"),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
   }),
   outputSchema: z.object({
     content: z.string(),
@@ -336,7 +443,7 @@ export const aiContentWorkflow = createWorkflow({
     wordCount: z.number(),
     metadata: z.object({
       readingTime: z.number(),
-      difficulty: z.enum(["easy", "medium", "hard"]),
+      difficulty: z.enum(['easy', 'medium', 'hard']),
       processedAt: z.string(),
     }),
     summary: z.string(),
@@ -353,11 +460,11 @@ export const aiContentWorkflow = createWorkflow({
   .commit();
 
 export const parallelAnalysisWorkflow = createWorkflow({
-  id: "parallel-analysis-workflow",
-  description: "Run multiple content analyses in parallel",
+  id: 'parallel-analysis-workflow',
+  description: 'Run multiple content analyses in parallel',
   inputSchema: z.object({
     content: z.string(),
-    type: z.enum(["article", "blog", "social"]).default("article"),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
   }),
   outputSchema: z.object({
     results: z.object({
@@ -370,7 +477,7 @@ export const parallelAnalysisWorkflow = createWorkflow({
         gradeLevel: z.string(),
       }),
       sentiment: z.object({
-        sentiment: z.enum(["positive", "neutral", "negative"]),
+        sentiment: z.enum(['positive', 'neutral', 'negative']),
         confidence: z.number(),
       }),
     }),
@@ -379,19 +486,19 @@ export const parallelAnalysisWorkflow = createWorkflow({
   .parallel([seoAnalysisStep, readabilityStep, sentimentStep])
   .then(
     createStep({
-      id: "combine-results",
-      description: "Combines parallel analysis results",
+      id: 'combine-results',
+      description: 'Combines parallel analysis results',
       inputSchema: z.object({
-        "seo-analysis": z.object({
+        'seo-analysis': z.object({
           seoScore: z.number(),
           keywords: z.array(z.string()),
         }),
-        "readability-analysis": z.object({
+        'readability-analysis': z.object({
           readabilityScore: z.number(),
           gradeLevel: z.string(),
         }),
-        "sentiment-analysis": z.object({
-          sentiment: z.enum(["positive", "neutral", "negative"]),
+        'sentiment-analysis': z.object({
+          sentiment: z.enum(['positive', 'neutral', 'negative']),
           confidence: z.number(),
         }),
       }),
@@ -406,22 +513,52 @@ export const parallelAnalysisWorkflow = createWorkflow({
             gradeLevel: z.string(),
           }),
           sentiment: z.object({
-            sentiment: z.enum(["positive", "neutral", "negative"]),
+            sentiment: z.enum(['positive', 'neutral', 'negative']),
             confidence: z.number(),
           }),
         }),
       }),
       execute: async ({ inputData }) => {
-        console.log("🔄 Combining parallel results...");
+        console.log('🔄 Combining parallel results...');
 
         return {
           results: {
-            seo: inputData["seo-analysis"],
-            readability: inputData["readability-analysis"],
-            sentiment: inputData["sentiment-analysis"],
+            seo: inputData['seo-analysis'],
+            readability: inputData['readability-analysis'],
+            sentiment: inputData['sentiment-analysis'],
           },
         };
       },
-    }),
+    })
   )
+  .commit();
+
+export const conditionalWorkflow = createWorkflow({
+  id: 'conditional-workflow',
+  description: 'Content processing with conditional branching',
+  inputSchema: z.object({
+    content: z.string(),
+    type: z.enum(['article', 'blog', 'social']).default('article'),
+  }),
+  outputSchema: z.object({
+    processedContent: z.string(),
+    processingType: z.string(),
+    recommendations: z.array(z.string()),
+  }),
+})
+  .then(assessContentStep)
+  .branch([
+    // Branch 1: Short and simple content
+    [
+      async ({ inputData }) =>
+        inputData.category === 'short' && inputData.complexity === 'simple',
+      quickProcessingStep,
+    ],
+    // Branch 2: Everything else
+    [
+      async ({ inputData }) =>
+        !(inputData.category === 'short' && inputData.complexity === 'simple'),
+      generalProcessingStep,
+    ],
+  ])
   .commit();
